@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>For You</title>
+    <style>
+        :root {
+            --gradient-angle: 135deg;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, 
+                rgba(255,182,193,0.8) 0%,
+                rgba(255,105,180,0.6) 30%,
+                rgba(147,112,219,0.4) 100%);
+            transition: background 1.5s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #message-container {
+            position: relative;
+            z-index: 2;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .message {
+            position: absolute;
+            font-size: 2.2rem;
+            font-family: 'Microsoft YaHei', cursive;
+            color: rgba(255,255,255,0.95);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            left: -100%;
+            opacity: 0;
+            transition: all 1s ease;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .message.active {
+            left: 0;
+            opacity: 1;
+        }
+
+        .message.fade-out {
+            left: 100%;
+            opacity: 0;
+        }
+
+        .shape {
+            position: absolute;
+            animation: fall linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        .star { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+        .heart { clip-path: polygon(50% 15%, 60% 0%, 75% 0%, 100% 25%, 100% 50%, 50% 100%, 0 50%, 0 25%, 25% 0%, 40% 0%); }
+        .cross { clip-path: polygon(10% 40%, 40% 40%, 40% 10%, 60% 10%, 60% 40%, 90% 40%, 90% 60%, 60% 60%, 60% 90%, 40% 90%, 40% 60%, 10% 60%); }
+
+        #final-link {
+            position: absolute;
+            font-size: 2.5rem;
+            color: #fff;
+            text-decoration: none;
+            opacity: 0;
+            transition: opacity 1s;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div id="message-container">
+        <div class="message">hello~杨子衡！！！（点击继续）</div>
+    </div>
+    <a id="final-link" href="https://jtt-fatcat.github.io/gift/"></a>
+    
+    
+
+    <script>
+        const messages = [
+            "今天考完试了呢！",
+            "你一定会取得好成绩哒！",
+            "那么....嗯....",
+            "假期里我们可以一起玩玩游戏吗？!",
+            "我盼望了五年呢！~",
+            "猜猜看为什么是五年呢?",
+            "嘿嘿~你算一下就知道了。",
+            "嗯~言归正传~",
+            "未来的日子多着呢",
+            "希望你可以慢慢享受嗨皮",
+            "不管遇到什么事情都要记得笑一笑",
+            "嗯......你....不介意的话来找我谈谈也随时欢迎呢！",
+            "什么...你...说我现在...是不是..害羞了？",
+            "才....才没有呢~",
+            "我这只..只是..是忽然过敏了！对就是这样！",
+            "哎呀回到正题上啦~",
+            "我希望你以后可以多些自己的选择",
+            "每一天都开开心心的！",
+            "每一天都有自己的雄心壮志！",
+            "不去内耗，去寻找长时间的快乐！",
+            "加油哦！子衡同学~",
+            "---你坚实的后盾"
+        ];
+
+        let currentIndex = 0;
+        const colors = [
+            ['#ffb6c1', '#9370db'], 
+            ['#ff69b4', '#da70d6'],
+            ['#ba55d3', '#ffc0cb'],
+            ['#d8bfd8', '#ff1493']
+        ];
+
+        function createShape() {
+            const shapes = ['star', 'heart', 'cross'];
+            const shape = document.createElement('div');
+            shape.className = `shape ${shapes[Math.floor(Math.random()*3)]}`;
+            shape.style.cssText = `
+                left: ${Math.random()*100}%;
+                width: ${15 + Math.random()*25}px;
+                height: ${15 + Math.random()*25}px;
+                background: rgba(255,255,255,${0.3 + Math.random()*0.7});
+                animation-duration: ${8 + Math.random()*12}s;
+                animation-delay: ${Math.random()*5}s;
+            `;
+            document.body.appendChild(shape);
+        }
+
+        function updateBackground() {
+            const [color1, color2] = colors[Math.floor(Math.random()*colors.length)];
+            document.body.style.background = `
+                radial-gradient(circle at center, 
+                ${color1} 0%,
+                mix(${color1}, ${color2}, 70%) 30%,
+                ${color2} 100%)`;
+        }
+
+        document.addEventListener('click', () => {
+            if(currentIndex <= messages.length) {
+                const container = document.getElementById('message-container');
+                const currentMessage = container.querySelector('.active');
+                
+                if(currentMessage) {
+                    currentMessage.classList.remove('active');
+                    currentMessage.classList.add('fade-out');
+                }
+
+                if(currentIndex < messages.length) {
+                    const newMessage = document.createElement('div');
+                    newMessage.className = `message${currentIndex === 0 ? ' active' : ''}`;
+                    newMessage.textContent = messages[currentIndex];
+                    container.appendChild(newMessage);
+                    setTimeout(() => newMessage.classList.add('active'), 100);
+                }
+
+                if(currentIndex === messages.length - 1) {
+                    const link = document.getElementById('final-link');
+                    link.style.opacity = '1';
+                    link.textContent = "点击这里查看特别惊喜 ➔";
+                }
+
+                currentIndex++;
+                updateBackground();
+                
+                // 创建3个新特效图形
+                for(let i=0; i<3; i++) createShape();
+            }
+        });
+
+        // 初始化图形
+        setInterval(createShape, 800);//
+    </script>
+</body>
+</html>
